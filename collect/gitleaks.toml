@@ -1,0 +1,36 @@
+# The secret scan's rules: gitleaks' own default rules, with exceptions for what agent transcripts are full of and
+# is not a credential. Calibrated on 2026-10-03 on 724 Entire sessions (1.68 GB): the default rules flagged 93
+# matches, 60 of them machine ids and commit hashes. Every exception below names what it lets through, and why.
+
+title = "errata-data"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Opaque values agents write themselves: Copilot CLI's apiCallId (49 of the 93 matches), Claude's thinking signatures, Codex's encrypted reasoning. Machine-made, never a credential a person typed."
+regexTarget = "match"
+# gitleaks' match starts at the key's name, without its opening quote; the closing quote and the colon keep these to
+# the JSON fields themselves.
+regexes = [
+    '''\bapiCallId"\s*:\s*"''',
+    '''\bsignature"\s*:\s*"''',
+    '''\bencrypted_content"\s*:\s*"''',
+]
+
+[[allowlists]]
+description = "A UUID under the generic rule is an identifier (session ids, request ids). Only under that rule: services whose real keys are UUIDs (Heroku, Snyk) keep their own rules."
+targetRules = ["generic-api-key"]
+regexTarget = "secret"
+regexes = ['''^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$''']
+
+[[allowlists]]
+description = "Subresource-integrity digests (lockfiles): hashes, not secrets."
+regexTarget = "secret"
+regexes = ['''^(sha1|sha256|sha384|sha512)-[A-Za-z0-9+/=]+$''']
+
+[[allowlists]]
+description = "A bare 40-hex value under the Sourcegraph rule is a git commit hash (11 of the 93 matches); Sourcegraph's own tokens start sgp_ and stay caught."
+targetRules = ["sourcegraph-access-token"]
+regexTarget = "secret"
+regexes = ['''^[0-9a-fA-F]{40}$''']

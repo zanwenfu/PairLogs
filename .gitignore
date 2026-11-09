@@ -1,0 +1,34 @@
+# Collected data and the collector's state live on the run machine and on
+# Hugging Face, never in git.
+data/
+state/
+logs/
+*.sqlite
+*.sqlite-*
+
+# Credentials.
+.env
+.env.*
+*.token
+secrets/
+
+# Python.
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+.DS_Store
+._*
+runs/
+
+# The paper's LaTeX build products.
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.pdf

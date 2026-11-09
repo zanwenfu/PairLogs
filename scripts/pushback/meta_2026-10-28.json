@@ -1,0 +1,15 @@
+{
+ "date": "2026-10-05 to 2026-10-14 (Azure OpenAI); 2026-10-27 to 2026-10-28 (AWS Bedrock)",
+ "service": "Azure OpenAI for the texts of versions 2026-10-04 and 2026-10-11; AWS Bedrock for the texts new in version 2026-10-27",
+ "services": [
+  {"service": "Azure OpenAI", "model": "gpt-6-luna", "model_version": "2026-09-22", "date": "2026-10-05 to 2026-10-14",
+   "texts": 363445, "for": "the typed texts of versions 2026-10-04 and 2026-10-11"},
+  {"service": "AWS Bedrock", "model": "gpt-6-luna", "model_id": "global.openai.gpt-6-luna",
+   "date": "2026-10-27 to 2026-10-28 (US Eastern)", "texts": 20482,
+   "for": "the typed texts new in version 2026-10-27, not in the labels already written",
+   "request": "the same instructions, input, answer format, reasoning effort and output limit as the Azure OpenAI run"}
+ ],
+ "agreement": {"texts": 200, "drawn": "at random (seed 20261028) from the texts Azure OpenAI labelled",
+               "same_label": 188, "aws_pushback_azure_not": 11, "azure_pushback_aws_not": 1},
+ "carried": "to version {version} by each row's text (its SHA-256), from the labels written for versions 2026-10-04 and 2026-10-11 (Azure OpenAI) and for the texts new in 2026-10-27 (AWS Bedrock); no text was sent again"
+}

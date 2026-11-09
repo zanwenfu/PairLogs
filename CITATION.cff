@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this pipeline or its dataset, please cite it as below."
+# The archive's DOI and the public repository's address are added when the release is published.
+title: "PairLogs: a multi-source dataset of developer-agent sessions with message authorship"
+type: software
+authors:
+  - family-names: Fu
+    given-names: Zanwen
+    affiliation: Duke University
+version: "2026-11-02"
+license: MIT
+keywords:
+  - coding agents
+  - developer sessions
+  - dataset
+  - mining software repositories

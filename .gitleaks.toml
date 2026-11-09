@@ -1,0 +1,10 @@
+# The secret scan of this repository (gitleaks). The tests hold made-up secrets: the masking tests need text that
+# looks like a key to show it is masked. None comes from the collected data (checked 2026-11-01: of the 74 values the
+# scan flags in the tests, 71 appear in no collected file; the other 3 are a code name the tests check is NOT masked,
+# a sequential placeholder, and the fixed header every OpenSSH key starts with).
+[extend]
+useDefault = true
+
+[allowlist]
+description = "the masking tests' made-up secrets"
+paths = ['''(^|/)tests/[^/]+\.py$''']

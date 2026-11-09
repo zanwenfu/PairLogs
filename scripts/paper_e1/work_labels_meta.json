@@ -1,0 +1,11 @@
+{
+ "what": "Labels about the work: each repository's kind of project and domain; each session's kind of task, and its kind of project and domain from its repository (project_from = repository) or, where it names none or GitHub no longer has it, from the session itself (project_from = the session). Main label and up to two others (also).",
+ "labeller": "Claude Haiku 4.5 (us.anthropic.claude-haiku-4-5-20251001-v1:0) through AWS Bedrock's batch service, temperature 0, one item per call; an answer off the guide's lists asked again through a form that accepts only the guide's labels (307 of 58,132 calls)",
+ "date": "2026-11-01 (US Eastern)",
+ "guide": "docs/work-labels-guide.md, draft 2 (sha256 c1f0b68037f0be451bf3791e9412bda424df6e7a749695904abf55f8a3ff8b12)",
+ "read": "a repository's name, description, topics and README start; a session's first typed messages, up to ten, 600 characters each, adding none once 4,000 are taken",
+ "labelled_version": "2026-11-01",
+ "repeat_agreement": "on 100 items, the same main label as a run of the same guide through the form: 82% (task 88%, project 81%, domain 77%)",
+ "person_check": "the maintainer labelled 100 items (50 sessions, 50 repositories) on 2026-11-04 without seeing the model's labels: the same main label on 32 of 49 tasks (65%), 31 of 48 projects (65%) and 28 of 48 domains (58%) where the person decided (Cohen's kappa 0.57, 0.55, 0.47); the person's label is among the model's main and other labels on 84%, 77% and 77%",
+ "caution": "a model's reading of short texts, not the developers' own account; use the shares, and the person check's agreement, not single labels"
+}

@@ -1,0 +1,96 @@
+# Terms the names stage must never mask: products, tools and phrases its finder takes for people.
+# One a line, exact text. Read term by term when the list was made (see collect/names.py).
+# Reviewed on version 2026-10-11 (every term the finder took for a person in 2+ sessions), 2026-10-25.
+# Products, tools, places and phrases:
+Direct Gurobi
+Strix Halo
+Transcript Monitor
+Hazard Taxonomies
+Image Provisioner
+Future Roadmap
+Jina Embeddings
+Max Clock
+Memgraph Docker
+Reviewby Reviewer
+Nondeterministic Testing
+Success Criteria
+Mark Complete
+Faria Lima
+Frozen Backbone Requirement
+Middle Man
+Pokemon Emerald
+Insights Roadmap
+Lorem Ipsum
+Avg Sync
+Gauss-Legendre
+Petrov-Galerkin
+Monte Carlo
+Desloppify Scan
+Wan Animate
+Deep Dive
+Arch Linux
+Git Archaeology
+Lint Markdown
+Narada Jayanti
+Sade Sati
+Jetpack Compose
+Destroy Ceed
+Trap Handler Source
+Join Clips
+Shared Pooler
+Marimo Workflow
+Paigasus Polyglot
+Login Page
+Review Checklist
+Rapporte Verteilung
+Download Auswertung
+Playfair Display
+Bing Copilot
+Blog Metadata
+Insights Codebase
+Dashboard Text Landscape
+Matches Google's
+Game Boy
+Wisp Plugins
+Sprout Lands
+Nerd Font
+Raspberry Pis
+Access Token
+Deep Seek
+Meet Mimi
+Demon King
+Cypher Query
+Die Benennung
+Kein Unterschied
+Gemini Watcher
+Page Down
+Württembergische Metallwarenfabrik'
+# Public figures (authors, public developers, public officials, fictional characters): not private people
+Kent Beck
+Kent Beck's
+Rick Astley
+Flávio Bolsonaro
+Boris Cherny
+Boris Cherny's
+Peter Steinberger
+Martin Fowler
+Martin Fowler's
+George Costanza
+William Zinsser
+Augusto Cury
+Cabo Daciolo
+Niels Lohmann
+Ludovic Courtès
+Adam Twardoch
+Adam Twardoch'
+Tianle Cai
+Rizèl Scarlett
+Evan Nemerson
+Jake Levirne
+Addison Howard
+Ashley Oldacre
+Chris Alexiuk
+Christof Henkel
+Rebecca Kao
+Ryan Holbrook
+Yi Dong
