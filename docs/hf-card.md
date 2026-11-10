@@ -86,7 +86,7 @@ often as on Claude Code (21% vs 48%). On the prompts people typed, both are abou
 **Tier A** (25,552 sessions, in the top-level folders) includes the full text, for sessions whose source licence allows
 sharing it. **Tier B** (36,057 sessions, in `tier-b/`) includes all labels but no text. For each session it gives where
 to fetch the text again: the repository, the file hashes and, where known, the commit. The pipeline rebuilds tier B's
-text from GitHub without a GitHub token; fetching all of tier B's repositories again took about 5 hours on 8 cores. SWE-chat v2's 3,730
+text from GitHub without a GitHub token; fetching all 3,603 GitHub repositories of this version again (both tiers) took about 5 hours on 8 cores. SWE-chat v2's 3,730
 tier-B sessions come from SWE-chat's own release instead ([how to rebuild](https://github.com/zanwenfu/PairLogs#rebuild-tier-b)).
 
 ## Access and download
@@ -132,7 +132,8 @@ You can also load each table by name with the `datasets` library, for example
 | `tier_b_swe_chat_prompts` | SWE-chat v2 labelled prompt (201,485; text not included) | who wrote it |
 | `tier_b_work_labels_sessions`, `tier_b_attribution` | tier B session | as in tier A |
 
-Tables join on `session_key`. The columns most analyses need:
+Session and message tables join on `session_key`; `repositories` joins by repository, and `tier_b_swe_chat_prompts`
+by SWE-chat's own `turn_id`. The columns most analyses need:
 
 | To get | Use |
 |---|---|
@@ -158,12 +159,14 @@ The [datasheet](https://github.com/zanwenfu/PairLogs/blob/main/docs/datasheet.md
 
 We used only logs that were public before we fetched them, and we contacted no one. Secrets are masked by three
 methods: Gitleaks with rules tuned on real logs, rules for known key formats, and a private list of known secret
-strings. Email addresses and user names in file paths are masked too. In tier A, people's full names found in
+strings. In the sources we collect, email addresses and user names in file paths are masked too;
+the copied datasets keep their publishers' own handling. In tier A, people's full names found in
 typed messages are masked wherever they occur in the session. After masking, a second scanner (TruffleHog) read tier A;
 the 4 strings it still flags are built from separate settings, not keys. We have not measured how many secrets both
 scanners miss. A name that appears only in an agent's reply or a tool's output (such as a commit log) is not masked.
-SpecStory names each file after the chat's title, so some session IDs (`session_key`) and paths contain that title. If
-a log was deleted from its source before a release was built, that release does not contain its text.
+SpecStory names each file after the chat's title, so some session IDs (`session_key`) and paths contain that title.
+Before each release, every GitHub repository is read again, and a session whose log was deleted by then keeps no text;
+a copied dataset's own files keep theirs.
 
 ## Terms of use and removal
 

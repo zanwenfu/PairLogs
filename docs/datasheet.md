@@ -44,7 +44,7 @@ Tier A holds 9.8 million message rows (and 104,583 helper rows). By who made the
 2.73 million, the agent program's own text 1.91 million, the developer 206,612, another agent 10,203.
 
 **Is it a sample?** It is what GitHub's search and Hugging Face's listings found, not every public session. For
-Entire, the one source whose coverage was estimated, a two-sample estimate puts the public repositories holding
+Entire (SpecStory's coverage, estimated the same way, is at most about 86% of about 1,620 repositories), a two-sample estimate puts the public repositories holding
 sessions at about 1,950 (1,877 to 2,027), of which 1,658 are in the data: at most about 85%, since both captures lean
 on GitHub's search, so the estimate is likely low. Our own searches alone find 1,535 (79%). The sessions are not a
 sample of developers: they come from people who chose to publish their logs, and a few repositories hold many
@@ -174,7 +174,7 @@ never text. Anyone can have a session or repository removed (see Maintenance).
 - **Model labels:** `pushback` by gpt-6-luna (one call per distinct text, the text alone; the instructions are in
   the changelog). On the 107,636 typed messages SWE-chat v2 also labels, the two agree on 68%: SWE-chat calls 55%
   pushback, ours 29%. SWE-chat's definition is broader (it counts new information and changes of plan), its model
-  sees the conversation before the message, and its labels are sampled; ours sees the message alone and gives one
+  reads the message in its conversation, and its labels are sampled; ours sees the message alone and gives one
   label per distinct text. Given the end of the agent's last reply as well (up to 1,200 characters), our labeller's
   rate moves from 29% to 27% and its agreement with SWE-chat from 68% to 67% (1,000 typed messages, 250 from each
   cell of agreement): the gap is the definition, not the missing context, as far as that much context shows. A

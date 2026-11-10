@@ -129,7 +129,7 @@ collect names --tier-dir release/<date>/a --out release/<date>/a-names     # mas
 | Fetch | Each repository with anonymous git, or a dataset's own files at a fixed revision. Raw files are stored unchanged. |
 | Read | One reader per log format (Claude Code, Codex, Cursor, Gemini CLI, Copilot, OpenCode, Pi, Aider, SpecStory's Markdown, and others) writes one row per session and one per message, tool call or tool result. |
 | Deduplicate | A session found in several places is kept once (the most complete copy); the other copies stay as session rows that point to it (`duplicate_of`). |
-| Mask | Secrets, email addresses and user names in file paths; in released text, people's full names found in typed messages, wherever they occur in the session. |
+| Mask | Secrets; in the sources we collect, email addresses and user names in file paths (copied datasets keep their publishers' handling); in released text, people's full names found in typed messages, wherever they occur in the session. |
 | Label authorship | Who wrote each row (`actor`) and whether a person typed it (`typed_by_developer`): from each agent's own records where it keeps them, otherwise from fixed rules. |
 | Release | Tier A, the full text where licences allow it; tier B, pointers for the other sessions. |
 
@@ -147,9 +147,9 @@ collect update --only-file PairLogs-data/tier-b/repositories.txt
 - The rebuilt text goes through the same secret masking, except the private list of known secret strings; run
   `collect names` to mask names. Join the rebuilt rows to tier B's labels by `text_id`, the hash of each typed message
   ([docs/columns/labels.md](docs/columns/labels.md)).
-- Tested from a fresh copy of the code with no token: of 2,110 tier-B sessions (70 small repositories drawn at random
+- Tested from a fresh copy of the code with no token (and the build's own masking lists): of 2,110 tier-B sessions (70 small repositories drawn at random
   and 8 large ones), 2,107 were rebuilt, and 2,105 of them match their stored hashes exactly; the 3 others are in
-  repositories deleted since. Fetching all of tier B's repositories again took about 5 hours on 8 cores.
+  repositories deleted since. Fetching all 3,603 GitHub repositories of the version again (both tiers) took about 5 hours on 8 cores.
 - SWE-chat v2's 3,730 tier-B sessions come from SWE-chat's own release: accept its terms on Hugging Face, set
   `HF_TOKEN`, and run `collect update --source swe-chat-v2`.
 
