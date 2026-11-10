@@ -79,7 +79,7 @@ for tier B, `tier-b/`. The [dataset page](https://huggingface.co/datasets/zanwen
 
 | Label | Made by | Checked by | Result |
 |---|---|---|---|
-| Who wrote each user message (`typed_by_developer`, `actor`) | each agent's own records where it keeps them, otherwise fixed rules | two people, each on the same 84 messages drawn at random | of the messages people typed, it marks 99.3% and 96.2% (one figure per person) as typed; of the messages it marks typed, 81.6% and 77.5% really are, so about one in five is not |
+| Who wrote each user message (`typed_by_developer`, `actor`) | each agent's own records where it keeps them, otherwise fixed rules | two people, each on the same 84 messages, drawn per source and weighted by each source's share | of the messages people typed, it marks 99.3% and 96.2% (one figure per person) as typed; of the messages it marks typed, 81.6% and 77.5% really are, so about one in five is not |
 | The same, where logs record no author (SpecStory, Aider, DataClaw) | fixed rules only | two people, 90 messages it marks typed, 30 per source | 87% to 97% really are typed, depending on the source |
 | The same | | two people, 180 messages | they agree with each other on 96.7% (Cohen's kappa 0.93) |
 | Pushback (`pushback`): a typed message corrects, redirects or rejects the agent's work, or reports it broken | OpenAI's gpt-6-luna, reading the message alone | two people, 80 typed messages | agrees with them on 87% and 82%; it marks 29% as pushback, the people 25% and 22%, and SWE-chat's broader label 55% |
@@ -108,7 +108,7 @@ python -m spacy download en_core_web_lg
 
 Secret scanning needs Gitleaks 8.30.1 on the path, or `ERRATA_GITLEAKS=/path/to/gitleaks`. GitHub search and licence
 lookups need a token in `GITHUB_TOKEN`; copying gated Hugging Face datasets needs `HF_TOKEN`. A full build of all six
-sources took 15 hours on 10 cores and up to 237 GB of memory; one repository takes minutes on a laptop. The pipeline
+sources took 15 hours on 10 cores and up to 237 GB of memory. The pipeline
 calls no language model; the two model labels were made by the scripts in `scripts/pushback/` and
 `scripts/paper_e1/work_labels*.py`, which need their own model access.
 

@@ -1,4 +1,4 @@
-"""A first look at tier A, once its archives are unzipped into one folder: sessions by source and agent, who wrote
+"""A first look at tier A, in the downloaded data folder: sessions by source and agent, who wrote
 what the logs file as the user's, the tools agents call, and one session's flow. Prints counts and labels only.
 
 python examples/quickstart.py TIER_A_FOLDER

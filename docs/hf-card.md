@@ -86,7 +86,7 @@ often as on Claude Code (21% vs 48%). On the prompts people typed, both are abou
 **Tier A** (25,552 sessions, in the top-level folders) includes the full text, for sessions whose source licence allows
 sharing it. **Tier B** (36,057 sessions, in `tier-b/`) includes all labels but no text. For each session it gives where
 to fetch the text again: the repository, the file hashes and, where known, the commit. The pipeline rebuilds tier B's
-text from GitHub without a GitHub token; for all of tier B this took about 5 hours on 8 cores. SWE-chat v2's 3,730
+text from GitHub without a GitHub token; fetching all of tier B's repositories again took about 5 hours on 8 cores. SWE-chat v2's 3,730
 tier-B sessions come from SWE-chat's own release instead ([how to rebuild](https://github.com/zanwenfu/PairLogs#rebuild-tier-b)).
 
 ## Access and download
@@ -146,7 +146,7 @@ Tables join on `session_key`. The columns most analyses need:
 
 | Label | Made by | Checked by | Result |
 |---|---|---|---|
-| Who wrote each user message (`typed_by_developer`, `actor`) | each agent's own records where it keeps them, otherwise fixed rules | two people, each on the same 84 messages drawn at random | of the messages people typed, it marks 99.3% and 96.2% (one figure per person) as typed; of the messages it marks typed, 81.6% and 77.5% really are, so about one in five is not |
+| Who wrote each user message (`typed_by_developer`, `actor`) | each agent's own records where it keeps them, otherwise fixed rules | two people, each on the same 84 messages, drawn per source and weighted by each source's share | of the messages people typed, it marks 99.3% and 96.2% (one figure per person) as typed; of the messages it marks typed, 81.6% and 77.5% really are, so about one in five is not |
 | The same, where logs record no author (SpecStory, Aider, DataClaw) | fixed rules only | two people, 90 messages it marks typed, 30 per source | 87% to 97% really are typed, depending on the source |
 | The same | | two people, 180 messages | they agree with each other on 96.7% (Cohen's kappa 0.93) |
 | Pushback (`pushback`): a typed message corrects, redirects or rejects the agent's work, or reports it broken | OpenAI's gpt-6-luna, reading the message alone | two people, 80 typed messages | agrees with them on 87% and 82%; it marks 29% as pushback, the people 25% and 22%, and SWE-chat's broader label 55% |
@@ -157,8 +157,8 @@ The [datasheet](https://github.com/zanwenfu/PairLogs/blob/main/docs/datasheet.md
 ## Privacy
 
 We used only logs that were public before we fetched them, and we contacted no one. Secrets are masked by three
-methods: Gitleaks with rules tuned on real logs, rules for known key formats, and a private list of secret strings found
-while building. Email addresses and user names in file paths are masked too. In tier A, people's full names found in
+methods: Gitleaks with rules tuned on real logs, rules for known key formats, and a private list of known secret
+strings. Email addresses and user names in file paths are masked too. In tier A, people's full names found in
 typed messages are masked wherever they occur in the session. After masking, a second scanner (TruffleHog) read tier A;
 the 4 strings it still flags are built from separate settings, not keys. We have not measured how many secrets both
 scanners miss. A name that appears only in an agent's reply or a tool's output (such as a commit log) is not masked.
