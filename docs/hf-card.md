@@ -16,6 +16,7 @@ tags:
 - claude-code
 - codex
 - agent-traces
+extra_gated_prompt: "PairLogs holds real developers' sessions. To get access, you agree not to try to identify or contact the people in these sessions, and to respect each session's source licence (see Licence on this page). We ask that the data be used for research. This dataset does not collect requesters' Hugging Face usernames or emails."
 configs:
 - config_name: sessions
   default: true
@@ -44,48 +45,67 @@ configs:
   data_files: "tier-b/attribution/entire.parquet"
 ---
 
-# PairLogs: developer–agent sessions with message authorship
+# PairLogs
 
-Sessions between developers and AI coding agents (Claude Code, Codex, Cursor, Aider, OpenCode and others), collected
-from six public sources, read into one schema, with copies across sources removed, secrets and personal details
-masked, and every message marked with who wrote it. Version 2026-11-02.
+**Code:** [github.com/zanwenfu/PairLogs](https://github.com/zanwenfu/PairLogs) ·
+**Datasheet:** [docs/datasheet.md](https://github.com/zanwenfu/PairLogs/blob/main/docs/datasheet.md) ·
+**Columns:** [docs/columns](https://github.com/zanwenfu/PairLogs/tree/main/docs/columns) · **Paper:** under review
+
+PairLogs is a dataset of real sessions between developers and AI coding agents such as Claude Code, Codex, Cursor,
+Aider and OpenCode. It gathers public sessions from six sources into one schema.
+
+In agent logs, many messages shown as the user's were not typed by a person: the agent's own software adds text such as
+the repository's instruction file. PairLogs labels who wrote each user message: a person typing, a person's action
+(such as an interrupt), or a program. By this label, a program wrote 32% of all user messages.
+
+A session saved in several places is kept once, secrets and names are masked, and the pipeline adds new sessions when
+it is run again. This page describes version 2026-11-02 (November 2026).
+
+## Example: authorship changes a published result
+
+SWE-chat v2, an earlier dataset, labels its user prompts for pushback. A program wrote about a third of its 201,485
+labelled prompts. On all prompts, SWE-chat's own label suggests that developers push back on Codex less than half as
+often as on Claude Code (21% vs 48%). On the prompts people typed, both are about 55%. The script
+`examples/swechat_gap.py` in the code repository reproduces this from released files.
+
+## At a glance
 
 | | |
 |---|---|
-| Distinct sessions | 61,609 (53,022 from 3,602 GitHub repositories) |
-| With a message marked typed by a person | 44,555 |
-| Tier A: full text (this repository) | 25,552 sessions, 9.8 million message rows, raw files included |
-| Tier B: pointers (`tier-b/`) | 36,057 sessions, every label without text; the pipeline rebuilds the text from its source |
-| Sources | Entire, SpecStory and Aider logs committed to GitHub; DataClaw, OpenHands feedback and SWE-chat v2 on Hugging Face |
+| Distinct sessions | 61,609 (53,022 of them from 3,602 GitHub repositories); copies are not counted |
+| Sessions with a message a person typed | 44,555 |
+| User messages in these sessions | 641,881 |
+| Rows of messages, tool calls and tool results, both tiers | 19.9 million |
+| Agents | Claude Code (25,171 sessions), Codex (9,450), Aider (5,948, of which 5,356 are scripted runs in one repository), Cursor (4,156), OpenCode (3,282) and others: 33 agent names, some for the same product |
+| Sources | Logs that developers committed to GitHub with the logging tools Entire and SpecStory, and Aider's chat files; three Hugging Face datasets: DataClaw uploads, OpenHands feedback and SWE-chat v2 |
 | Sessions began | November 2023 to October 2026 |
+| Size | about 21 GB |
 
-## Why it exists
+## Two tiers
 
-Agents' logs file far more under "user" than what a person typed: instruction files, tool output, other agents'
-messages, prompts sent by scripts. PairLogs marks which messages a person typed (`typed_by_developer`, and `actor`:
-developer, agent, tool, harness or peer). The mark changes what earlier data shows: in SWE-chat v2, about a third of
-its 201,485 labelled user prompts are text a program wrote, and its own pushback label, 27 points apart for Claude
-Code and Codex on every prompt, is the same for both on the prompts people typed (`examples/swechat_gap.py` in the
-code repository reproduces this from the released files).
+**Tier A** (25,552 sessions, in the top-level folders) includes the full text, for sessions whose source licence allows
+sharing it. **Tier B** (36,057 sessions, in `tier-b/`) includes all labels but no text. For each session it gives where
+to fetch the text again: the repository, the file hashes and, where known, the commit. The pipeline rebuilds tier B's
+text from GitHub without a GitHub token; for all of tier B this took about 5 hours on 8 cores. SWE-chat v2's 3,730
+tier-B sessions come from SWE-chat's own release instead ([how to rebuild](https://github.com/zanwenfu/PairLogs#rebuild-tier-b)).
 
-Program text varies by agent in PairLogs too, even inside one logger (Entire's logs): programs wrote 16.8% of
-what Cursor's logs file as the user's, 39.5% of Claude Code's and 53.2% of Codex's, so a pushback rate divided by every
-user entry partly ranks the agents' harnesses (14.0% for Claude Code, 25.1% for Cursor). Over the typed entries the
-gap shrinks but stays (25.2% and 31.3%), and the spread across agents halves. Claude Code's logs also mark the slash
-commands people type (11.2% of its typed entries, 0.9% of them pushback); without them its gap to Cursor shrinks from
-6.1 to 3.0 points, though other agents' commands may sit unmarked among their typed entries. The typed rates compare the developers who use each agent, not the
-agents' effect.
+## Access and download
 
-## Get it
+Sign in to Hugging Face, open this page and accept the terms. Access is granted at once, and your username and email
+are not collected.
 
 ```bash
 pip install -U huggingface_hub duckdb
-hf download zanwenfu/PairLogs --repo-type dataset --local-dir PairLogs-2026-11-02
-cd PairLogs-2026-11-02 && sha256sum -c MEMBERS.sha256       # every file (macOS: shasum -a 256 -c)
+hf auth login                                     # a Hugging Face token with read access
+hf download zanwenfu/PairLogs --repo-type dataset --local-dir PairLogs-data
+cd PairLogs-data && sha256sum -c MEMBERS.sha256   # check each file (macOS: shasum -a 256 -c)
 ```
 
+To download one table only, add for example `--include "data/*"` (sessions) or `--include "conversations/*"`.
+
 ```python
-import duckdb
+import duckdb   # run inside PairLogs-data; this reads tier A
+# messages people typed, per agent
 duckdb.sql("""
     SELECT agent, count(*) AS typed_messages
     FROM 'conversations/*/*.parquet'
@@ -94,79 +114,76 @@ duckdb.sql("""
 """).show()
 ```
 
-Each table is also a configuration of this repository (`datasets.load_dataset("zanwenfu/PairLogs", "conversations")`).
+You can also load each table by name with the `datasets` library, for example
+`load_dataset("zanwenfu/PairLogs", "sessions")`. The `conversations` table has about 9.8 million rows.
 
-## What is here
+## Tables
 
-Tier A, at the top: `data/<source>/` (one row per session: 36 columns, the raw files in `files`),
-`conversations/<source>/` and `conversations_subagents/<source>/` (one row per message, tool call or tool result: 50
-columns), `copied/` (the copied datasets' own files, masked), `work_labels/`, `attribution/` (Entire's count of the
-committed lines its agent wrote, per session), `repositories.parquet` (each repository's
-owner type), `changelog.json` (every count, every copied dataset credited with its source, revision, author and
-licence) and `croissant.json`. Tier B, in `tier-b/`: `pointers.parquet` (repository, file hashes and,
-where known, the commit and checkpoint), `labels/` (each message row's labels and a digest of its text, and who wrote each of SWE-chat's labelled
-prompts), `work_labels/`, `repositories.txt` and its changelog. Every column is defined in the code repository's
-`docs/columns`, and how the data was made and checked in its `docs/datasheet.md`.
+| Name | One row per | Use it for |
+|---|---|---|
+| `sessions` (folder `data/`) | session; 36 columns, raw log files included | agents, repositories, dates, licences |
+| `conversations` | message, tool call or tool result; 50 columns | what people typed, what agents did, `pushback` |
+| `conversations_subagents` | row of a helper agent's conversation | work an agent handed to a helper agent |
+| `attribution` | session logged by Entire (9,512; 12,677 more in tier B) | which committed lines the agent wrote, as Entire records them |
+| `work_labels_sessions`, `work_labels_repositories` | session; repository | kind of task, project and domain |
+| `repositories` | repository | whether the owner is a person or an organisation |
+| `tier_b_pointers` | tier B session | fetching the text again |
+| `tier_b_message_labels` | tier B message row | its labels, and a hash of each typed message to check rebuilt text |
+| `tier_b_swe_chat_prompts` | SWE-chat v2 labelled prompt (201,485; text not included) | who wrote it |
+| `tier_b_work_labels_sessions`, `tier_b_attribution` | tier B session | as in tier A |
+
+Tables join on `session_key`. The columns most analyses need:
 
 | To get | Use |
 |---|---|
-| What developers typed | `typed_by_developer` and `copy_of` is null |
-| What the agent did | `kind = 'tool_call'`, then `tool_name`, `category`, `command` |
-| Failed tool calls | `is_error = true` |
-| How much of the committed code the agent wrote (Entire sessions) | `attribution/entire.parquet`, Entire's own count |
-| One row per distinct session | a session table where `duplicate_of` is null |
+| Who wrote a row | `actor`: developer, agent, tool, harness (text the agent's program inserts, such as instruction files) or peer (a message from another agent, such as a helper agent's report) |
+| Messages people typed | `typed_by_developer` is true and `copy_of` is null (some agents log a message twice when it is typed while they work; `copy_of` marks the second copy) |
+| A person's actions (an interrupt, a plan approval, an attached file) | `actor = 'developer'` and `typed_by_developer` is false |
+| The agent's tool calls | rows with `kind = 'tool_call'`, with `tool_name` and, for shell tools, `command`; `is_error` marks failed tool outputs |
+| One row per distinct session | `sessions` where `duplicate_of` is null (each copy points to its kept session) |
 
-## Labels, and how they were checked
+## Label accuracy
 
-- **Who typed it** (the pipeline's rules and each agent's own records). A person checked 184 messages:
-  SWE-chat's labelled prompts 64 of 75, our own rows 66 of 84 where both decided (71 of 84 after this version's fix
-  of what the check found, on the same messages, so not an independent measure). A second person, marking the same
-  184 messages on their own, agrees with the first on 174 of the 180 both decided (96.7%, kappa 0.93). The check found helper agents'
-  sessions filed as sessions of their own, whose "user" messages are the parent agent's; they are marked so in this
-  version. On a fresh draw of 84 of our messages, weighted to the data, the person puts the typed mark's
-  recall at 99.3% (95% interval 79.9 to 100) and its precision at 81.6% (63.0 to 90.6); what it wrongly marks typed
-  is mostly program text. A model reading the same cards agrees with the person on 89.2% of them (kappa 0.76); a second person agrees with the first on 84.6% (kappa 0.67) and puts the precision at 77.5% and the recall at 96.2%. Where a format records no author (SpecStory, Aider, DataClaw), text rules alone decide: on 90 more messages the mark calls typed there, 30 per source, two people (agreeing on 98.9%, kappa 0.90) read 87% to 97% as typed in each source; the rest is mostly program text.
-- **Pushback** (`pushback`, gpt-6-luna, the message alone): whether a typed message corrects, redirects, rejects or
-  reports broken the agent's work. A person's check of 80 messages: the person 25%, this label 29% (accuracy 0.87);
-  SWE-chat's own, broader label 55%. A second person agrees with the first on 61 of 68 (kappa 0.72) and puts this
-  label's accuracy at 0.82.
-- **A second reader** (a model, Claude Sonnet 5.5, given the same guide and the same text the person saw, never an
-  answer): on who typed it, it agrees with the person on 166 of 179 messages where both decided (kappa 0.85); on
-  pushback, 62 of 68 (kappa 0.77).
-- **Kind of task, project and domain** (`work_labels/`, Claude Haiku 4.5 from a written guide): a person's check of
-  100 items gives the same main label on 65%, 65% and 58%. Use the shares, not single labels.
+| Label | Made by | Checked by | Result |
+|---|---|---|---|
+| Who wrote each user message (`typed_by_developer`, `actor`) | each agent's own records where it keeps them, otherwise fixed rules | two people, each on the same 84 messages drawn at random | of the messages people typed, it marks 99.3% and 96.2% (one figure per person) as typed; of the messages it marks typed, 81.6% and 77.5% really are, so about one in five is not |
+| The same, where logs record no author (SpecStory, Aider, DataClaw) | fixed rules only | two people, 90 messages it marks typed, 30 per source | 87% to 97% really are typed, depending on the source |
+| The same | | two people, 180 messages | they agree with each other on 96.7% (Cohen's kappa 0.93) |
+| Pushback (`pushback`): a typed message corrects, redirects or rejects the agent's work, or reports it broken | OpenAI's gpt-6-luna, reading the message alone | two people, 80 typed messages | agrees with them on 87% and 82%; it marks 29% as pushback, the people 25% and 22%, and SWE-chat's broader label 55% |
+| Kind of task, project and domain (`work_labels`) | Claude Haiku 4.5, from a written guide | one person, 100 items | the same main label on 58% to 65%: use these labels for proportions over many sessions, not to describe one session |
+
+The [datasheet](https://github.com/zanwenfu/PairLogs/blob/main/docs/datasheet.md) describes each check, with its sample and 95% interval.
 
 ## Privacy
 
-Secrets are masked (gitleaks with calibrated exceptions, plus known texts), and so are email addresses and user names in
-home paths; in tier A, people's full names found in typed messages are masked wherever they occur in the session. Every
-published file was scanned again after masking, and tier A also by a second, independent scanner (TruffleHog): before
-masking it flagged 28,206 distinct strings, nearly all ids, hashes and pieces of encoded data (none was tried against a
-live service). We masked the 325 that could be keys or passwords (a provider's key format, a connection string's
-password, a value right after a key or password name, a key-like string with digits, each in every written form found,
-and three encoded blocks holding two API keys) in 2,500 places. Scanned again, the only masked strings it still reports
-are four it assembles from separate settings, none of them a key. Masking catches most secrets, not every one. A
-name only in an agent's reply or a tool's output is left: by a person's reading of a sample, tier A still holds a person's
-name in about 58,900 places (95% interval 34,200 to 88,700), 87% of them in tools' output such as commit logs. File
-names stay as their repositories publish them: SpecStory names a session's file by the chat's title, so session keys and
-paths in both tiers carry that title. We ask that the data be used for research and that no one try to identify or
-contact the people in these sessions. Before release we read every GitHub repository again (2026-11-06): the 397
-sessions whose repository had since been deleted, made private or emptied by its owner (18 repositories) keep no text
-here and are pointers in tier B. A session or repository is removed from the next version on request: write to
+We used only logs that were public before we fetched them, and we contacted no one. Secrets are masked by three
+methods: Gitleaks with rules tuned on real logs, rules for known key formats, and a private list of secret strings found
+while building. Email addresses and user names in file paths are masked too. In tier A, people's full names found in
+typed messages are masked wherever they occur in the session. After masking, a second scanner (TruffleHog) read tier A;
+the 4 strings it still flags are built from separate settings, not keys. We have not measured how many secrets both
+scanners miss. A name that appears only in an agent's reply or a tool's output (such as a commit log) is not masked.
+SpecStory names each file after the chat's title, so some session IDs (`session_key`) and paths contain that title. If
+a log was deleted from its source before a release was built, that release does not contain its text.
+
+## Terms of use and removal
+
+Please use the data for research, and do not try to identify or contact the people in these sessions. To have a
+session or repository removed from the next version, open an issue on [GitHub](https://github.com/zanwenfu/PairLogs/issues) or write to
 zanwen.fu@duke.edu, naming it.
 
 ## Licence
 
-Each session's text keeps the licence of its source: its repository's (`repo_license`; tier A holds text only under a
-recognised open licence), or the copied dataset's own (DataClaw and OpenHands feedback MIT; SWE-chat v2's sessions are
-not redistributed here). What the pipeline adds (the labels, the pointers, the tables' layout and this documentation)
-is CC BY 4.0. The code is MIT.
+Each session's text keeps its source's licence: its repository's (`repo_license`) or that of the Hugging Face dataset
+it came from (DataClaw and OpenHands feedback: MIT; SWE-chat v2: ODC-By). Tier A holds text only from repositories with
+a recognised open licence, and SWE-chat v2's sessions are not redistributed here ([LICENSE.md](LICENSE.md)). What the
+pipeline adds (labels, pointers, the tables' layout and this documentation) is CC BY 4.0. `changelog.json` credits each
+copied dataset with its source, revision, author and licence.
 
-## Known limits
+## Limits
 
-The data is what public search finds, not a sample of developers; a few repositories hold many sessions; about 0.9% of
-kept sessions miss a part of their work that another file under the same session id holds (`also_in` says where);
-pointers decay as repositories are deleted; the labels are models' readings of short texts.
+The data is what public search finds, from developers who chose to publish their logs, so it does not represent all
+developers. A few repositories hold many sessions. Tier B sessions cannot be rebuilt once their repository is deleted:
+in a test, 3 of 2,110 already could not.
 
 ## Cite
 
